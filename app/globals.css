@@ -1,26 +1,58 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #c9daea;
+  --foreground: #191516;
+  --brand-ember: #ab2346;
+  --brand-ink: #191516;
+  --brand-moss: #7e846b;
+  --brand-sand: #ffee88;
+  --brand-copper: #c9daea;
+  --page-gradient: radial-gradient(circle_at_top, rgba(255, 238, 136, 0.55), transparent 60%),
+    radial-gradient(circle_at_20%_80%, rgba(201, 218, 234, 0.75), transparent 55%),
+    linear-gradient(180deg, #f8f2df 0%, #dfe8f0 55%, #d6dfd4 100%);
+  --surface: rgba(255, 255, 255, 0.82);
+  --surface-solid: #ffffff;
+  --panel-strong: #191516;
+  --panel-strong-foreground: #ffee88;
+  --border-subtle: rgba(25, 21, 22, 0.1);
+  --shadow-color: rgba(25, 21, 22, 0.08);
+  --cta-bg: #ab2346;
+  --cta-fg: #f8f2df;
+  --cta-hover: #7e846b;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-space-grotesk);
+  --font-display: var(--font-fraunces);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #191516;
+  --foreground: #c9daea;
+  --brand-ember: #ffee88;
+  --brand-ink: #c9ccea;
+  --brand-moss: #7e846b;
+  --brand-sand: #191516;
+  --brand-copper: #ab2346;
+  --page-gradient: radial-gradient(circle_at_top, rgba(171, 35, 70, 0.35), transparent 60%),
+    radial-gradient(circle_at_20%_80%, rgba(126, 132, 107, 0.35), transparent 55%),
+    linear-gradient(180deg, #191516 0%, #141215 55%, #0e0d0f 100%);
+  --surface: rgba(35, 31, 33, 0.88);
+  --surface-solid: #231f21;
+  --panel-strong: #0f0d0e;
+  --panel-strong-foreground: #c9daea;
+  --border-subtle: rgba(201, 218, 234, 0.15);
+  --shadow-color: rgba(0, 0, 0, 0.55);
+  --cta-bg: #7e846b;
+  --cta-fg: #c9daea;
+  --cta-hover: #ab2346;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), "Segoe UI", sans-serif;
 }
