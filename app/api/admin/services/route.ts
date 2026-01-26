@@ -1,0 +1,119 @@
+import { NextResponse } from "next/server";
+
+import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/admin";
+
+type ServicePayload = {
+  id?: string;
+  name?: string;
+  description?: string | null;
+  durationMinutes?: number;
+  price?: number;
+  isActive?: boolean;
+};
+
+export async function GET() {
+  const session = await requireAdmin();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const services = await prisma.service.findMany({
+    orderBy: { createdAt: "asc" },
+  });
+
+  return NextResponse.json(services);
+}
+
+export async function POST(request: Request) {
+  const session = await requireAdmin();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  let payload: ServicePayload;
+
+  try {
+    payload = (await request.json()) as ServicePayload;
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON payload." }, { status: 400 });
+  }
+
+  const { name, description, durationMinutes, price, isActive } = payload;
+
+  if (!name || !durationMinutes || !price) {
+    return NextResponse.json(
+      { error: "name, durationMinutes, and price are required." },
+      { status: 400 },
+    );
+  }
+
+  const service = await prisma.service.create({
+    data: {
+      name,
+      description: description ?? null,
+      durationMinutes,
+      price,
+      isActive: isActive ?? true,
+    },
+  });
+
+  return NextResponse.json(service);
+}
+
+export async function PATCH(request: Request) {
+  const session = await requireAdmin();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  let payload: ServicePayload;
+
+  try {
+    payload = (await request.json()) as ServicePayload;
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON payload." }, { status: 400 });
+  }
+
+  if (!payload.id) {
+    return NextResponse.json({ error: "Service id is required." }, { status: 400 });
+  }
+
+  const { id, name, description, durationMinutes, price, isActive } = payload;
+
+  const service = await prisma.service.update({
+    where: { id },
+    data: {
+      ...(name ? { name } : {}),
+      ...(description !== undefined ? { description } : {}),
+      ...(durationMinutes ? { durationMinutes } : {}),
+      ...(price ? { price } : {}),
+      ...(isActive !== undefined ? { isActive } : {}),
+    },
+  });
+
+  return NextResponse.json(service);
+}
+
+export async function DELETE(request: Request) {
+  const session = await requireAdmin();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  let payload: { id?: string };
+
+  try {
+    payload = (await request.json()) as { id?: string };
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON payload." }, { status: 400 });
+  }
+
+  if (!payload.id) {
+    return NextResponse.json({ error: "Service id is required." }, { status: 400 });
+  }
+
+  await prisma.service.delete({ where: { id: payload.id } });
+
+  return NextResponse.json({ success: true });
+}
