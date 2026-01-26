@@ -7,7 +7,9 @@ const STORAGE_KEY = "gbs-theme";
 type Theme = "light" | "dark";
 
 function applyTheme(theme: Theme) {
-  document.documentElement.classList.toggle("dark", theme === "dark");
+  const isDark = theme === "dark";
+  document.documentElement.classList.toggle("dark", isDark);
+  document.body.classList.toggle("dark", isDark);
   localStorage.setItem(STORAGE_KEY, theme);
 }
 

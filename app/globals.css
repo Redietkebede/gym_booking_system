@@ -1,25 +1,27 @@
 @import "tailwindcss";
 
 :root {
-  --background: #c9daea;
-  --foreground: #191516;
-  --brand-ember: #ab2346;
-  --brand-ink: #191516;
-  --brand-moss: #7e846b;
-  --brand-sand: #ffee88;
-  --brand-copper: #c9daea;
-  --page-gradient: radial-gradient(circle_at_top, rgba(255, 238, 136, 0.55), transparent 60%),
-    radial-gradient(circle_at_20%_80%, rgba(201, 218, 234, 0.75), transparent 55%),
-    linear-gradient(180deg, #f8f2df 0%, #dfe8f0 55%, #d6dfd4 100%);
-  --surface: rgba(255, 255, 255, 0.82);
+  --background: #f6f2e9;
+  --foreground: #141316;
+  --brand-ember: #a24b3c;
+  --brand-ink: #141316;
+  --brand-moss: #4b4a45;
+  --brand-sand: #e4ded2;
+  --pill-bg: #e2dad0;
+  --brand-copper: #8c6b27;
+  --page-gradient: radial-gradient(circle at top, rgba(179, 138, 47, 0.16), transparent 62%),
+    radial-gradient(circle at 15% 80%, rgba(20, 19, 22, 0.06), transparent 60%),
+    linear-gradient(180deg, #f9f6f0 0%, #f1e9dc 55%, #e9dfcf 100%);
+  --surface: rgba(255, 255, 255, 0.86);
   --surface-solid: #ffffff;
-  --panel-strong: #191516;
-  --panel-strong-foreground: #ffee88;
-  --border-subtle: rgba(25, 21, 22, 0.1);
-  --shadow-color: rgba(25, 21, 22, 0.08);
-  --cta-bg: #ab2346;
-  --cta-fg: #f8f2df;
-  --cta-hover: #7e846b;
+  --panel-strong: #141316;
+  --panel-strong-foreground: #f6f2e9;
+  --border-subtle: rgba(20, 19, 22, 0.12);
+  --shadow-color: rgba(20, 19, 22, 0.2);
+  --cta-bg: #a24b3c;
+  --cta-fg: #f6f2e9;
+  --cta-hover: #8e3f33;
+  --metric-accent: #94483e;
 }
 
 @theme inline {
@@ -29,30 +31,46 @@
   --font-display: var(--font-fraunces);
 }
 
-.dark {
-  --background: #191516;
-  --foreground: #c9daea;
-  --brand-ember: #ffee88;
-  --brand-ink: #c9ccea;
-  --brand-moss: #7e846b;
-  --brand-sand: #191516;
-  --brand-copper: #ab2346;
-  --page-gradient: radial-gradient(circle_at_top, rgba(171, 35, 70, 0.35), transparent 60%),
-    radial-gradient(circle_at_20%_80%, rgba(126, 132, 107, 0.35), transparent 55%),
-    linear-gradient(180deg, #191516 0%, #141215 55%, #0e0d0f 100%);
-  --surface: rgba(35, 31, 33, 0.88);
-  --surface-solid: #231f21;
-  --panel-strong: #0f0d0e;
-  --panel-strong-foreground: #c9daea;
-  --border-subtle: rgba(201, 218, 234, 0.15);
+html.dark {
+  --background: #141316;
+  --foreground: #f1ece2;
+  --brand-ember: #c56957;
+  --brand-ink: #f1ece2;
+  --brand-moss: #6b655b;
+  --brand-sand: #141316;
+  --pill-bg: #1a191d;
+  --brand-copper: #b38a2f;
+  --page-gradient: radial-gradient(circle at top, rgba(211, 169, 76, 0.25), transparent 60%),
+    radial-gradient(circle at 15% 80%, rgba(241, 236, 226, 0.08), transparent 55%),
+    linear-gradient(180deg, #141316 0%, #101012 55%, #0c0b0d 100%);
+  --surface: rgba(24, 23, 26, 0.9);
+  --surface-solid: #19181b;
+  --panel-strong: #0d0c0e;
+  --panel-strong-foreground: #f1ece2;
+  --border-subtle: rgba(241, 236, 226, 0.16);
   --shadow-color: rgba(0, 0, 0, 0.55);
-  --cta-bg: #7e846b;
-  --cta-fg: #c9daea;
-  --cta-hover: #ab2346;
+  --cta-bg: #a24b3c;
+  --cta-fg: #f6f2e9;
+  --cta-hover: #8e3f33;
+  --metric-accent: #c56957;
+}
+
+html {
+  background-color: var(--background);
+  background-image: var(--page-gradient);
+  background-attachment: fixed;
+  color: var(--foreground);
+}
+
+html.dark {
+  background-color: var(--background);
+  background-image: var(--page-gradient);
+  background-attachment: fixed;
+  color: var(--foreground);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: transparent;
+  color: inherit;
   font-family: var(--font-sans), "Segoe UI", sans-serif;
 }

@@ -2,7 +2,7 @@ import ThemeToggle from "./components/theme-toggle";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[var(--page-gradient)] text-foreground">
+    <div className="min-h-screen text-foreground">
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6 md:px-10">
         <div className="text-lg font-semibold uppercase tracking-[0.2em] text-(--brand-ink)">
           Atlas Forge
@@ -50,15 +50,15 @@ export default function Home() {
           </div>
           <div className="flex flex-wrap gap-6 text-sm font-medium text-(--brand-ink)">
             <div className="flex flex-col">
-              <span className="text-2xl font-semibold text-(--brand-ember)">12+</span>
+              <span className="text-2xl font-semibold text-(--metric-accent)">12+</span>
               Coaching programs
             </div>
             <div className="flex flex-col">
-              <span className="text-2xl font-semibold text-(--brand-ember)">4.9</span>
+              <span className="text-2xl font-semibold text-(--metric-accent)">4.9</span>
               Member rating
             </div>
             <div className="flex flex-col">
-              <span className="text-2xl font-semibold text-(--brand-ember)">24h</span>
+              <span className="text-2xl font-semibold text-(--metric-accent)">24h</span>
               Response time
             </div>
           </div>
@@ -74,15 +74,15 @@ export default function Home() {
               and a closing finisher tailored to your goal.
             </p>
             <div className="mt-6 grid gap-3 text-sm">
-              <div className="flex items-center justify-between rounded-2xl bg-(--brand-sand) px-4 py-3">
+              <div className="flex items-center justify-between rounded-2xl bg-(--pill-bg) px-4 py-3">
                 <span>Strength Foundations</span>
                 <span className="font-semibold text-(--brand-ember)">60 min</span>
               </div>
-              <div className="flex items-center justify-between rounded-2xl bg-(--brand-sand) px-4 py-3">
+              <div className="flex items-center justify-between rounded-2xl bg-(--pill-bg) px-4 py-3">
                 <span>Athletic Conditioning</span>
                 <span className="font-semibold text-(--brand-ember)">45 min</span>
               </div>
-              <div className="flex items-center justify-between rounded-2xl bg-(--brand-sand) px-4 py-3">
+              <div className="flex items-center justify-between rounded-2xl bg-(--pill-bg) px-4 py-3">
                 <span>Mobility Reset</span>
                 <span className="font-semibold text-(--brand-ember)">40 min</span>
               </div>

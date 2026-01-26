@@ -1,16 +1,22 @@
 import ThemeToggle from "../components/theme-toggle";
+import BookingForm from "./booking-form";
+import { prisma } from "@/lib/prisma";
 
-const serviceOptions = [
-  "Strength Foundations",
-  "Athletic Conditioning",
-  "Mobility Reset",
-  "Power Circuit",
-  "Performance Sprint",
-];
+type BookPageProps = {
+  searchParams?: Record<string, string | string[]>;
+};
 
-export default function BookPage() {
+export default async function BookPage({ searchParams }: BookPageProps) {
+  const services = await prisma.service.findMany({
+    where: { isActive: true },
+    select: { id: true, name: true },
+    orderBy: { createdAt: "asc" },
+  });
+  const initialServiceId =
+    typeof searchParams?.serviceId === "string" ? searchParams.serviceId : undefined;
+
   return (
-    <div className="min-h-screen bg-[var(--page-gradient)] text-foreground">
+    <div className="min-h-screen text-foreground">
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6 md:px-10">
         <a
           className="text-lg font-semibold uppercase tracking-[0.2em] text-(--brand-ink)"
@@ -53,70 +59,7 @@ export default function BookPage() {
         </section>
 
         <section className="rounded-3xl border border-(--border-subtle) bg-(--surface) p-6 shadow-[0_30px_90px_var(--shadow-color)] md:p-8">
-          <form className="grid gap-5">
-            <label className="grid gap-2 text-sm font-semibold text-(--brand-ink)">
-              Service
-              <select className="rounded-2xl border border-(--border-subtle) bg-(--surface-solid) px-4 py-3 text-base text-(--brand-ink)">
-                {serviceOptions.map((service) => (
-                  <option key={service} value={service}>
-                    {service}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <div className="grid gap-5">
-              <label className="grid gap-2 text-sm font-semibold text-(--brand-ink)">
-                Date
-                <input
-                  type="date"
-                  className="rounded-2xl border border-(--border-subtle) bg-(--surface-solid) px-4 py-3 text-base text-(--brand-ink)"
-                />
-              </label>
-              <label className="grid gap-2 text-sm font-semibold text-(--brand-ink)">
-                Time
-                <input
-                  type="time"
-                  className="rounded-2xl border border-(--border-subtle) bg-(--surface-solid) px-4 py-3 text-base text-(--brand-ink)"
-                />
-              </label>
-            </div>
-            <label className="grid gap-2 text-sm font-semibold text-(--brand-ink)">
-              Full name
-              <input
-                type="text"
-                placeholder="Jane Doe"
-                className="rounded-2xl border border-(--border-subtle) bg-(--surface-solid) px-4 py-3 text-base text-(--brand-ink)"
-              />
-            </label>
-            <div className="grid gap-5">
-              <label className="grid gap-2 text-sm font-semibold text-(--brand-ink)">
-                Email
-                <input
-                  type="email"
-                  placeholder="you@example.com"
-                  className="rounded-2xl border border-(--border-subtle) bg-(--surface-solid) px-4 py-3 text-base text-(--brand-ink)"
-                />
-              </label>
-              <label className="grid gap-2 text-sm font-semibold text-(--brand-ink)">
-                Phone
-                <input
-                  type="tel"
-                  placeholder="+254 7xx xxx xxx"
-                  className="rounded-2xl border border-(--border-subtle) bg-(--surface-solid) px-4 py-3 text-base text-(--brand-ink)"
-                />
-              </label>
-            </div>
-            <button
-              type="submit"
-              className="mt-2 rounded-full border border-(--brand-ink) px-6 py-4 text-sm font-semibold uppercase tracking-wide text-(--brand-ink) transition hover:-translate-y-px hover:border-(--brand-ember) hover:text-(--brand-ember)"
-            >
-              Submit booking
-            </button>
-            <p className="text-xs text-(--brand-ink)/60">
-              This form is UI-only for now. We will connect it to the booking API
-              in the next step.
-            </p>
-          </form>
+          <BookingForm services={services} initialServiceId={initialServiceId} />
         </section>
       </main>
     </div>

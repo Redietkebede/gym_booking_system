@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Atlas Forge — Gym Booking System
+
+A Next.js App Router project for a boutique training studio. The current UI includes a branded marketing home page, a services listing, and a booking form UI. The data layer is defined with Prisma and PostgreSQL, with seed data for services and an admin user.
+
+## Current Features
+
+- **Marketing home page** with CTA links to services and booking.
+- **Services page** with curated session cards.
+- **Booking page** UI with form fields (UI-only for now).
+- **Theme toggle** (light/dark) using local storage.
+- **Prisma schema** for users, services, and bookings.
+- **Seed script** to populate sample services and an admin user.
+
+## Tech Stack
+
+- **Next.js 16 (App Router)**
+- **React 19**
+- **Tailwind CSS v4**
+- **Prisma + PostgreSQL**
+- **NextAuth** (installed, not wired yet)
+
+## Pages & Routes
+
+- `/` — Home
+- `/services` — Services listing
+- `/book` — Booking form UI
+
+## Data Model (Prisma)
+
+- **User** (admin seeded)
+- **Service**
+- **Booking** (with status enum)
+
+See the schema in `prisma/schema.prisma`.
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies and run the dev server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create `.env` with:
 
-## Learn More
+```bash
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DB"
+SEED_ADMIN_EMAIL="admin@example.com"
+SEED_ADMIN_PASSWORD="admin123"
+SEED_ADMIN_NAME="Admin"
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Database Setup
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Run migrations and seed:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npx prisma migrate dev
+npx prisma db seed
+```
 
-## Deploy on Vercel
+## Notes / Next Steps
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Hook the booking form to an API route.
+- Add authentication for admin access.
+- Build admin dashboard for bookings and services.
+- Replace hardcoded services UI with database data.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Scripts
+
+- `npm run dev` — Dev server
+- `npm run build` — Production build
+- `npm run start` — Start production server
+- `npm run lint` — Lint
