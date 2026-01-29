@@ -1,14 +1,17 @@
 # Atlas Forge — Gym Booking System
 
-A Next.js App Router project for a boutique training studio. The current UI includes a branded marketing home page, a services listing, and a booking form UI. The data layer is defined with Prisma and PostgreSQL, with seed data for services and an admin user.
+A Next.js App Router project for a boutique training studio. The public site is fully wired to Prisma data, and the admin area supports authentication plus booking/service management.
 
 ## Current Features
 
-- **Marketing home page** with CTA links to services and booking.
-- **Services page** with curated session cards.
-- **Booking page** UI with form fields (UI-only for now).
+- **Marketing home page** with CTA links, dynamic services, and testimonials pulled from the database.
+- **Services page** that lists active services from Prisma.
+- **Booking page** connected to `POST /api/bookings` with validation and success states.
 - **Theme toggle** (light/dark) using local storage.
-- **Prisma schema** for users, services, and bookings.
+- **Admin authentication** via NextAuth Credentials provider.
+- **Admin bookings**: list, create, edit, and update booking status.
+- **Admin services**: list, create, edit, toggle active status, and delete.
+- **Prisma schema** for users, services (including `workoutIncludes` + `testimonials`), and bookings.
 - **Seed script** to populate sample services and an admin user.
 
 ## Tech Stack
@@ -17,13 +20,33 @@ A Next.js App Router project for a boutique training studio. The current UI incl
 - **React 19**
 - **Tailwind CSS v4**
 - **Prisma + PostgreSQL**
-- **NextAuth** (installed, not wired yet)
+- **NextAuth** (Credentials provider)
 
 ## Pages & Routes
 
+### Public
+
 - `/` — Home
 - `/services` — Services listing
-- `/book` — Booking form UI
+- `/book` — Booking form
+
+### Admin
+
+- `/admin/login` — Admin sign-in
+- `/admin/bookings` — Booking management
+- `/admin/bookings/new` — Create booking
+- `/admin/bookings/[id]` — Edit booking
+- `/admin/services` — Service management
+- `/admin/services/new` — Create service
+- `/admin/services/[id]` — Edit service
+
+### API Routes
+
+- `GET /api/services` — Active services
+- `POST /api/bookings` — Create booking
+- `GET/POST/PATCH/DELETE /api/admin/services` — Admin service management
+- `GET/POST/PATCH/DELETE /api/admin/bookings` — Admin booking management
+- `/api/auth/[...nextauth]` — NextAuth handler
 
 ## Data Model (Prisma)
 
@@ -53,6 +76,8 @@ DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DB"
 SEED_ADMIN_EMAIL="admin@example.com"
 SEED_ADMIN_PASSWORD="admin123"
 SEED_ADMIN_NAME="Admin"
+NEXTAUTH_SECRET="your-secret"
+NEXTAUTH_URL="http://localhost:3000"
 ```
 
 ## Database Setup
@@ -66,10 +91,9 @@ npx prisma db seed
 
 ## Notes / Next Steps
 
-- Hook the booking form to an API route.
-- Add authentication for admin access.
-- Build admin dashboard for bookings and services.
-- Replace hardcoded services UI with database data.
+- Add availability rules/time-slot management.
+- Send confirmation emails or SMS for bookings.
+- Add analytics/export for bookings.
 
 ## Scripts
 
