@@ -1,27 +1,27 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f6f2e9;
-  --foreground: #141316;
-  --brand-ember: #a24b3c;
-  --brand-ink: #141316;
-  --brand-moss: #4b4a45;
-  --brand-sand: #e4ded2;
-  --pill-bg: #e2dad0;
-  --brand-copper: #8c6b27;
-  --page-gradient: radial-gradient(circle at top, rgba(179, 138, 47, 0.16), transparent 62%),
-    radial-gradient(circle at 15% 80%, rgba(20, 19, 22, 0.06), transparent 60%),
-    linear-gradient(180deg, #f9f6f0 0%, #f1e9dc 55%, #e9dfcf 100%);
-  --surface: rgba(255, 255, 255, 0.86);
+  --background: #eceff1;
+  --foreground: #1a1d21;
+  --brand-ember: #b86a4b;
+  --brand-ink: #1a1d21;
+  --brand-moss: #5f6670;
+  --brand-sand: #dde2e6;
+  --pill-bg: #e4e8ec;
+  --brand-copper: #b86a4b;
+  --page-gradient: radial-gradient(circle at top, rgba(184, 106, 75, 0.18), transparent 60%),
+    radial-gradient(circle at 10% 85%, rgba(26, 29, 33, 0.06), transparent 55%),
+    linear-gradient(180deg, #f7f9fa 0%, #eef2f5 55%, #e6ebef 100%);
+  --surface: rgba(247, 249, 250, 0.92);
   --surface-solid: #ffffff;
-  --panel-strong: #141316;
-  --panel-strong-foreground: #f6f2e9;
-  --border-subtle: rgba(20, 19, 22, 0.12);
-  --shadow-color: rgba(20, 19, 22, 0.2);
-  --cta-bg: #a24b3c;
-  --cta-fg: #f6f2e9;
-  --cta-hover: #8e3f33;
-  --metric-accent: #94483e;
+  --panel-strong: #1a1d21;
+  --panel-strong-foreground: #eceff1;
+  --border-subtle: rgba(26, 29, 33, 0.14);
+  --shadow-color: rgba(26, 29, 33, 0.18);
+  --cta-bg: #b86a4b;
+  --cta-fg: #f7f3ee;
+  --cta-hover: #a85f43;
+  --metric-accent: #b86a4b;
 }
 
 @theme inline {
@@ -73,4 +73,83 @@ body {
   background: transparent;
   color: inherit;
   font-family: var(--font-sans), "Segoe UI", sans-serif;
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  width: max-content;
+  animation: marquee-scroll 50s linear infinite;
+}
+
+.btn-primary,
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease,
+    border-color 150ms ease, color 150ms ease;
+}
+
+.btn-sm {
+  padding: 0.5rem 1.1rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+}
+
+.btn-primary {
+  border: 1px solid transparent;
+  background: var(--cta-bg);
+  color: var(--cta-fg);
+  box-shadow: 0 12px 30px rgba(162, 75, 60, 0.28);
+}
+
+.btn-primary:hover {
+  background: var(--cta-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 16px 40px rgba(162, 75, 60, 0.35);
+}
+
+.btn-primary:disabled,
+.btn-ghost:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-ghost {
+  border: 1px solid var(--brand-ink);
+  color: var(--brand-ink);
+  background: transparent;
+}
+
+.btn-ghost:hover {
+  border-color: var(--brand-ember);
+  color: var(--brand-ember);
+  background: rgba(162, 75, 60, 0.08);
+  transform: translateY(-1px);
+}
+
+.menu-item:hover {
+  background: var(--pill-bg);
+}
+
+html.dark .menu-item:hover {
+  background: rgba(241, 236, 226, 0.08);
+  color: var(--brand-ember);
 }

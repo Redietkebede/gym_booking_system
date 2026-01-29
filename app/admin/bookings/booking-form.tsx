@@ -55,6 +55,9 @@ const emptyState: BookingFormState = {
 const inputClassName =
   "rounded-2xl border border-(--border-subtle) bg-(--surface-solid) px-4 py-3 text-sm text-(--brand-ink) placeholder:text-(--brand-ink)/40";
 
+const selectClassName =
+  "w-full appearance-none rounded-2xl border border-(--border-subtle) bg-(--surface-solid) px-4 py-3 pr-10 text-sm text-(--brand-ink) placeholder:text-(--brand-ink)/40 [background-image:linear-gradient(45deg,transparent_50%,currentColor_50%),linear-gradient(135deg,currentColor_50%,transparent_50%)] [background-position:calc(100%-1.1rem)_calc(50%-2px),calc(100%-0.8rem)_calc(50%-2px)] [background-size:5px_5px,5px_5px] [background-repeat:no-repeat]";
+
 function ToastNotice({ toast }: { toast: Toast | null }) {
   if (!toast) {
     return null;
@@ -192,18 +195,17 @@ export function BookingForm({ services, initialBooking }: BookingFormProps) {
   return (
     <>
       <ToastNotice toast={toast} />
-      <form className="mt-6 grid gap-6" onSubmit={handleSubmit}>
+      <form className="mt-6 grid gap-6" onSubmit={handleSubmit} noValidate>
         <div className="grid gap-2">
           <label className="text-xs font-semibold uppercase tracking-widest text-(--brand-ink)">
             Service
           </label>
           <select
-            className={inputClassName}
+            className={selectClassName}
             value={formState.serviceId}
             onChange={(event) =>
               setFormState((prev) => ({ ...prev, serviceId: event.target.value }))
             }
-            required
           >
             <option value="">Select service</option>
             {services.map((service) => (
@@ -226,7 +228,6 @@ export function BookingForm({ services, initialBooking }: BookingFormProps) {
               onChange={(event) =>
                 setFormState((prev) => ({ ...prev, date: event.target.value }))
               }
-              required
             />
           </div>
           <div className="grid gap-2">
@@ -240,7 +241,6 @@ export function BookingForm({ services, initialBooking }: BookingFormProps) {
               onChange={(event) =>
                 setFormState((prev) => ({ ...prev, timeSlot: event.target.value }))
               }
-              required
             />
           </div>
         </div>
@@ -258,7 +258,6 @@ export function BookingForm({ services, initialBooking }: BookingFormProps) {
                   customerName: event.target.value,
                 }))
               }
-              required
             />
           </div>
           <div className="grid gap-2">
@@ -275,7 +274,6 @@ export function BookingForm({ services, initialBooking }: BookingFormProps) {
                   customerEmail: event.target.value,
                 }))
               }
-              required
             />
           </div>
         </div>
@@ -293,7 +291,6 @@ export function BookingForm({ services, initialBooking }: BookingFormProps) {
                   customerPhone: event.target.value,
                 }))
               }
-              required
             />
           </div>
           {initialBooking ? (
@@ -302,7 +299,7 @@ export function BookingForm({ services, initialBooking }: BookingFormProps) {
                 Status
               </label>
               <select
-                className={inputClassName}
+                className={selectClassName}
                 value={formState.status}
                 onChange={(event) =>
                   setFormState((prev) => ({

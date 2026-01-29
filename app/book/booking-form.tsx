@@ -30,6 +30,15 @@ const emptyState: FormState = {
   customerPhone: "",
 };
 
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const formatLocalDate = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 export default function BookingForm({
   services,
   initialServiceId,
@@ -53,9 +62,50 @@ export default function BookingForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<
+    Partial<Record<keyof FormState, string>>
+  >({});
+  const minDate = useMemo(() => formatLocalDate(new Date()), []);
+  const isFormDisabled = isSubmitting || services.length === 0;
 
   const updateField = (field: keyof FormState, value: string) => {
+    setFieldErrors((prev) => {
+      if (!prev[field]) {
+        return prev;
+      }
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
     setFormState((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const validate = () => {
+    const nextErrors: Partial<Record<keyof FormState, string>> = {};
+
+    if (!formState.serviceId) {
+      nextErrors.serviceId = "Please select a service.";
+    }
+    if (!formState.date) {
+      nextErrors.date = "Please select a date.";
+    }
+    if (!formState.timeSlot) {
+      nextErrors.timeSlot = "Please select a time.";
+    }
+    if (!formState.customerName.trim()) {
+      nextErrors.customerName = "Please enter your name.";
+    }
+    if (!formState.customerEmail.trim()) {
+      nextErrors.customerEmail = "Please enter your email.";
+    } else if (!emailPattern.test(formState.customerEmail.trim())) {
+      nextErrors.customerEmail = "Enter a valid email address.";
+    }
+    if (!formState.customerPhone.trim()) {
+      nextErrors.customerPhone = "Please enter your phone number.";
+    }
+
+    setFieldErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -63,8 +113,7 @@ export default function BookingForm({
     setError(null);
     setSuccess(null);
 
-    if (!formState.serviceId) {
-      setError("Please select a service.");
+    if (!validate()) {
       return;
     }
 
@@ -85,6 +134,7 @@ export default function BookingForm({
       }
 
       setSuccess("Booking received. We will confirm within 24 hours.");
+      setFieldErrors({});
       setFormState((prev) => ({
         ...emptyState,
         serviceId: prev.serviceId,
@@ -98,21 +148,36 @@ export default function BookingForm({
   };
 
   return (
-    <form className="grid gap-5" onSubmit={handleSubmit}>
+    <form className="grid gap-5" onSubmit={handleSubmit} noValidate>
       <label className="grid gap-2 text-sm font-semibold text-(--brand-ink)">
         Service
         <select
-          className="rounded-2xl border border-(--border-subtle) bg-(--surface-solid) px-4 py-3 text-base text-(--brand-ink)"
+          className="w-full appearance-none rounded-2xl border border-(--border-subtle) bg-(--surface-solid) px-4 py-3 pr-12 text-base text-(--brand-ink) [background-image:linear-gradient(45deg,transparent_50%,currentColor_50%),linear-gradient(135deg,currentColor_50%,transparent_50%)] [background-position:calc(100%-1.25rem)_calc(50%-3px),calc(100%-0.95rem)_calc(50%-3px)] [background-size:6px_6px,6px_6px] [background-repeat:no-repeat]"
           value={formState.serviceId}
           onChange={(event) => updateField("serviceId", event.target.value)}
-          disabled={!services.length || isSubmitting}
+          required
+          disabled={isFormDisabled}
+          aria-invalid={fieldErrors.serviceId ? "true" : "false"}
         >
-          {services.map((service) => (
-            <option key={service.id} value={service.id}>
-              {service.name}
-            </option>
-          ))}
+          {services.length ? (
+            services.map((service) => (
+              <option key={service.id} value={service.id}>
+                {service.name}
+              </option>
+            ))
+          ) : (
+            <option value="">No services available</option>
+          )}
         </select>
+        {fieldErrors.serviceId ? (
+          <span className="text-xs text-(--brand-ember)">
+            {fieldErrors.serviceId}
+          </span>
+        ) : services.length === 0 ? (
+          <span className="text-xs text-(--brand-ink)/60">
+            Services are currently unavailable. Please check back soon.
+          </span>
+        ) : null}
       </label>
       <div className="grid gap-5">
         <label className="grid gap-2 text-sm font-semibold text-(--brand-ink)">
@@ -122,8 +187,13 @@ export default function BookingForm({
             className="rounded-2xl border border-(--border-subtle) bg-(--surface-solid) px-4 py-3 text-base text-(--brand-ink)"
             value={formState.date}
             onChange={(event) => updateField("date", event.target.value)}
-            disabled={isSubmitting}
+            min={minDate}
+            disabled={isFormDisabled}
+            aria-invalid={fieldErrors.date ? "true" : "false"}
           />
+          {fieldErrors.date ? (
+            <span className="text-xs text-(--brand-ember)">{fieldErrors.date}</span>
+          ) : null}
         </label>
         <label className="grid gap-2 text-sm font-semibold text-(--brand-ink)">
           Time
@@ -132,8 +202,14 @@ export default function BookingForm({
             className="rounded-2xl border border-(--border-subtle) bg-(--surface-solid) px-4 py-3 text-base text-(--brand-ink)"
             value={formState.timeSlot}
             onChange={(event) => updateField("timeSlot", event.target.value)}
-            disabled={isSubmitting}
+            disabled={isFormDisabled}
+            aria-invalid={fieldErrors.timeSlot ? "true" : "false"}
           />
+          {fieldErrors.timeSlot ? (
+            <span className="text-xs text-(--brand-ember)">
+              {fieldErrors.timeSlot}
+            </span>
+          ) : null}
         </label>
       </div>
       <label className="grid gap-2 text-sm font-semibold text-(--brand-ink)">
@@ -144,8 +220,14 @@ export default function BookingForm({
           className="rounded-2xl border border-(--border-subtle) bg-(--surface-solid) px-4 py-3 text-base text-(--brand-ink)"
           value={formState.customerName}
           onChange={(event) => updateField("customerName", event.target.value)}
-          disabled={isSubmitting}
+          disabled={isFormDisabled}
+          aria-invalid={fieldErrors.customerName ? "true" : "false"}
         />
+        {fieldErrors.customerName ? (
+          <span className="text-xs text-(--brand-ember)">
+            {fieldErrors.customerName}
+          </span>
+        ) : null}
       </label>
       <div className="grid gap-5">
         <label className="grid gap-2 text-sm font-semibold text-(--brand-ink)">
@@ -156,8 +238,14 @@ export default function BookingForm({
             className="rounded-2xl border border-(--border-subtle) bg-(--surface-solid) px-4 py-3 text-base text-(--brand-ink)"
             value={formState.customerEmail}
             onChange={(event) => updateField("customerEmail", event.target.value)}
-            disabled={isSubmitting}
+            disabled={isFormDisabled}
+            aria-invalid={fieldErrors.customerEmail ? "true" : "false"}
           />
+          {fieldErrors.customerEmail ? (
+            <span className="text-xs text-(--brand-ember)">
+              {fieldErrors.customerEmail}
+            </span>
+          ) : null}
         </label>
         <label className="grid gap-2 text-sm font-semibold text-(--brand-ink)">
           Phone
@@ -167,14 +255,20 @@ export default function BookingForm({
             className="rounded-2xl border border-(--border-subtle) bg-(--surface-solid) px-4 py-3 text-base text-(--brand-ink)"
             value={formState.customerPhone}
             onChange={(event) => updateField("customerPhone", event.target.value)}
-            disabled={isSubmitting}
+            disabled={isFormDisabled}
+            aria-invalid={fieldErrors.customerPhone ? "true" : "false"}
           />
+          {fieldErrors.customerPhone ? (
+            <span className="text-xs text-(--brand-ember)">
+              {fieldErrors.customerPhone}
+            </span>
+          ) : null}
         </label>
       </div>
       <button
         type="submit"
-        className="mt-2 rounded-full border border-(--brand-ink) px-6 py-4 text-sm font-semibold uppercase tracking-wide text-(--brand-ink) transition hover:-translate-y-px hover:border-(--brand-ember) hover:text-(--brand-ember) disabled:cursor-not-allowed disabled:opacity-60"
-        disabled={isSubmitting || !services.length}
+        className="btn-primary mt-2"
+        disabled={isFormDisabled}
       >
         {isSubmitting ? "Submitting..." : "Submit booking"}
       </button>

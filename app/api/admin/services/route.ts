@@ -10,6 +10,8 @@ type ServicePayload = {
   durationMinutes?: number;
   price?: number;
   isActive?: boolean;
+  workoutIncludes?: string[];
+  testimonials?: unknown;
 };
 
 export async function GET() {
@@ -39,7 +41,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON payload." }, { status: 400 });
   }
 
-  const { name, description, durationMinutes, price, isActive } = payload;
+  const {
+    name,
+    description,
+    durationMinutes,
+    price,
+    isActive,
+    workoutIncludes,
+    testimonials,
+  } = payload;
 
   if (!name || !durationMinutes || !price) {
     return NextResponse.json(
@@ -55,6 +65,8 @@ export async function POST(request: Request) {
       durationMinutes,
       price,
       isActive: isActive ?? true,
+      workoutIncludes: workoutIncludes ?? [],
+      testimonials: testimonials ?? [],
     },
   });
 
@@ -79,7 +91,16 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Service id is required." }, { status: 400 });
   }
 
-  const { id, name, description, durationMinutes, price, isActive } = payload;
+  const {
+    id,
+    name,
+    description,
+    durationMinutes,
+    price,
+    isActive,
+    workoutIncludes,
+    testimonials,
+  } = payload;
 
   const service = await prisma.service.update({
     where: { id },
@@ -89,6 +110,8 @@ export async function PATCH(request: Request) {
       ...(durationMinutes ? { durationMinutes } : {}),
       ...(price ? { price } : {}),
       ...(isActive !== undefined ? { isActive } : {}),
+      ...(workoutIncludes ? { workoutIncludes } : {}),
+      ...(testimonials !== undefined ? { testimonials } : {}),
     },
   });
 

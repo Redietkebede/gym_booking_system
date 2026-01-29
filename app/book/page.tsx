@@ -1,5 +1,6 @@
-import ThemeToggle from "../components/theme-toggle";
+import PublicHeader from "../components/public-header";
 import BookingForm from "./booking-form";
+import SiteFooter from "../components/site-footer";
 import { prisma } from "@/lib/prisma";
 
 type BookPageProps = {
@@ -17,23 +18,7 @@ export default async function BookPage({ searchParams }: BookPageProps) {
 
   return (
     <div className="min-h-screen text-foreground">
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6 md:px-10">
-        <a
-          className="text-lg font-semibold uppercase tracking-[0.2em] text-(--brand-ink)"
-          href="/"
-        >
-          Atlas Forge
-        </a>
-        <nav className="flex items-center gap-6 text-sm font-medium text-(--brand-ink)">
-          <a className="transition hover:text-(--brand-ember)" href="/services">
-            Services
-          </a>
-          <a className="transition hover:text-(--brand-ember)" href="/book">
-            Book Now
-          </a>
-          <ThemeToggle className="text-xs" />
-        </nav>
-      </header>
+      <PublicHeader hideBooking />
 
       <main className="mx-auto grid w-full max-w-6xl gap-10 px-6 pb-20 pt-6 md:grid-cols-[0.9fr_1.1fr] md:px-10">
         <section className="flex flex-col gap-6">
@@ -62,6 +47,8 @@ export default async function BookPage({ searchParams }: BookPageProps) {
           <BookingForm services={services} initialServiceId={initialServiceId} />
         </section>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }

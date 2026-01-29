@@ -1,4 +1,5 @@
-import ThemeToggle from "../components/theme-toggle";
+import PublicHeader from "../components/public-header";
+import SiteFooter from "../components/site-footer";
 import { prisma } from "@/lib/prisma";
 
 const priceFormatter = new Intl.NumberFormat("en-KE");
@@ -12,29 +13,14 @@ export default async function ServicesPage() {
       description: true,
       durationMinutes: true,
       price: true,
+      workoutIncludes: true,
     },
     orderBy: { createdAt: "asc" },
   });
 
   return (
     <div className="min-h-screen text-foreground">
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6 md:px-10">
-        <a
-          className="text-lg font-semibold uppercase tracking-[0.2em] text-(--brand-ink)"
-          href="/"
-        >
-          Atlas Forge
-        </a>
-        <nav className="flex items-center gap-6 text-sm font-medium text-(--brand-ink)">
-          <a className="transition hover:text-(--brand-ember)" href="/services">
-            Services
-          </a>
-          <a className="transition hover:text-(--brand-ember)" href="/book">
-            Book Now
-          </a>
-          <ThemeToggle className="text-xs" />
-        </nav>
-      </header>
+      <PublicHeader hideServices />
 
       <main className="mx-auto w-full max-w-6xl px-6 pb-20 pt-6 md:px-10">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
@@ -51,7 +37,7 @@ export default async function ServicesPage() {
             </p>
           </div>
           <a
-            className="w-fit rounded-full border border-(--brand-ink) px-6 py-3 text-sm font-semibold uppercase tracking-wide text-(--brand-ink) transition hover:-translate-y-px hover:border-(--brand-ember) hover:text-(--brand-ember)"
+            className="btn-primary w-fit"
             href="/book"
           >
             Book a session
@@ -78,9 +64,19 @@ export default async function ServicesPage() {
                     {service.description}
                   </p>
                 ) : null}
+                {service.workoutIncludes.length ? (
+                  <ul className="mt-4 grid gap-2 text-xs text-(--brand-ink)/70">
+                    {service.workoutIncludes.map((item) => (
+                      <li key={item} className="flex items-center gap-2">
+                        <span className="h-1.5 w-1.5 rounded-full bg-(--brand-ember)" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
                 <div className="mt-6 flex items-center justify-between">
                   <span className="text-lg font-semibold text-(--brand-ember)">
-                    ETB {priceFormatter.format(service.price)}
+                    USD {priceFormatter.format(service.price)}
                   </span>
                   <a
                     className="text-sm font-semibold uppercase tracking-wide text-(--brand-ink) transition hover:text-(--brand-ember)"
@@ -98,6 +94,8 @@ export default async function ServicesPage() {
           </div>
         )}
       </main>
+
+      <SiteFooter />
     </div>
   );
 }

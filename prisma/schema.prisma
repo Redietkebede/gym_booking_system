@@ -31,6 +31,8 @@ model Service {
   durationMinutes Int
   price           Int
   isActive        Boolean   @default(true)
+  workoutIncludes String[]  @default([])
+  testimonials    Json?
   bookings        Booking[]
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt

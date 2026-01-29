@@ -10,6 +10,8 @@ type Service = {
   durationMinutes: number;
   price: number;
   isActive: boolean;
+  workoutIncludes: string[];
+  testimonials: unknown;
 };
 
 type Toast = {
@@ -23,6 +25,12 @@ type ServiceFormState = {
   durationMinutes: string;
   price: string;
   isActive: boolean;
+  workoutIncludes: string;
+  testimonials: Array<{
+    name: string;
+    rating: number;
+    quote: string;
+  }>;
 };
 
 const emptyState: ServiceFormState = {
@@ -31,6 +39,14 @@ const emptyState: ServiceFormState = {
   durationMinutes: "",
   price: "",
   isActive: true,
+  workoutIncludes: "",
+  testimonials: [
+    {
+      name: "",
+      rating: 5,
+      quote: "",
+    },
+  ],
 };
 
 const inputClassName =
@@ -74,12 +90,37 @@ function useServiceForm(initial?: Service) {
     if (!initial) {
       return emptyState;
     }
+    const testimonials = (Array.isArray(initial.testimonials)
+      ? initial.testimonials
+      : [])
+      .filter((entry) => entry && typeof entry === "object")
+      .map((entry) => ({
+        name: typeof entry.name === "string" ? entry.name : "",
+        rating:
+          typeof entry.rating === "number" && Number.isFinite(entry.rating)
+            ? Math.min(Math.max(Math.round(entry.rating), 1), 5)
+            : 5,
+        quote: typeof entry.quote === "string" ? entry.quote : "",
+      }));
+    const trimmedTestimonials = testimonials.slice(0, 5);
+    const seededTestimonials = trimmedTestimonials.length
+      ? trimmedTestimonials
+      : [
+          {
+            name: "",
+            rating: 5,
+            quote: "",
+          },
+        ];
+
     return {
       name: initial.name,
       description: initial.description ?? "",
       durationMinutes: String(initial.durationMinutes),
       price: String(initial.price),
       isActive: initial.isActive,
+      workoutIncludes: initial.workoutIncludes?.join("\n") ?? "",
+      testimonials: seededTestimonials,
     };
   });
 
@@ -88,6 +129,17 @@ function useServiceForm(initial?: Service) {
     const description = formState.description.trim();
     const durationMinutes = Number(formState.durationMinutes);
     const price = Number(formState.price);
+    const workoutIncludes = formState.workoutIncludes
+      .split("\n")
+      .map((item) => item.trim())
+      .filter(Boolean);
+    const testimonials = formState.testimonials
+      .map((item) => ({
+        name: item.name.trim(),
+        rating: Math.min(Math.max(Math.round(item.rating || 0), 1), 5),
+        quote: item.quote.trim(),
+      }))
+      .filter((item) => item.name && item.quote);
 
     return {
       name,
@@ -95,6 +147,8 @@ function useServiceForm(initial?: Service) {
       durationMinutes,
       price,
       isActive: formState.isActive,
+      workoutIncludes,
+      testimonials,
     };
   }, [formState]);
 
@@ -140,7 +194,7 @@ export function NewServiceForm() {
   return (
     <>
       <ToastNotice toast={toast} />
-      <form className="mt-6 grid gap-6" onSubmit={handleSubmit}>
+      <form className="mt-6 grid gap-6" onSubmit={handleSubmit} noValidate>
         <div className="grid gap-2">
           <label className="text-xs font-semibold uppercase tracking-widest text-(--brand-ink)">
             Service name
@@ -152,7 +206,6 @@ export function NewServiceForm() {
               setFormState((prev) => ({ ...prev, name: event.target.value }))
             }
             placeholder="Strength Foundations"
-            required
           />
         </div>
         <div className="grid gap-2">
@@ -160,13 +213,137 @@ export function NewServiceForm() {
             Description
           </label>
           <textarea
-            className={`${inputClassName} min-h-[120px] resize-none`}
+            className={`${inputClassName} min-h-30 resize-none`}
             value={formState.description}
             onChange={(event) =>
               setFormState((prev) => ({ ...prev, description: event.target.value }))
             }
             placeholder="Short overview of the service."
           />
+        </div>
+        <div className="grid gap-2">
+          <label className="text-xs font-semibold uppercase tracking-widest text-(--brand-ink)">
+            Workout includes (one per line)
+          </label>
+          <textarea
+            className={`${inputClassName} min-h-35 resize-none`}
+            value={formState.workoutIncludes}
+            onChange={(event) =>
+              setFormState((prev) => ({
+                ...prev,
+                workoutIncludes: event.target.value,
+              }))
+            }
+            placeholder="Movement prep and mobility warm-up"
+          />
+        </div>
+        <div className="grid gap-4">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold uppercase tracking-widest text-(--brand-ink)">
+              Testimonials (up to 5)
+            </p>
+            {formState.testimonials.length < 5 ? (
+              <button
+                type="button"
+                className="rounded-full border border-(--brand-ink) px-4 py-1.5 text-[0.65rem] font-semibold uppercase tracking-widest text-(--brand-ink) transition hover:border-(--brand-ember) hover:text-(--brand-ember)"
+                onClick={() =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    testimonials: [
+                      ...prev.testimonials,
+                      { name: "", rating: 5, quote: "" },
+                    ],
+                  }))
+                }
+              >
+                Add
+              </button>
+            ) : null}
+          </div>
+          {formState.testimonials.map((entry, index) => (
+            <div
+              key={`testimonial-${index}`}
+              className="grid gap-3 rounded-2xl border border-(--border-subtle) bg-(--surface-solid) p-4"
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold uppercase tracking-widest text-(--brand-ink)/70">
+                  Testimonial {index + 1}
+                </p>
+                <button
+                  type="button"
+                  className="text-[0.65rem] font-semibold uppercase tracking-widest text-(--brand-ink)/70 transition hover:text-(--brand-ember)"
+                  onClick={() =>
+                    setFormState((prev) => {
+                      const next = prev.testimonials.filter(
+                        (_, entryIndex) => entryIndex !== index,
+                      );
+                      return { ...prev, testimonials: next };
+                    })
+                  }
+                >
+                  Remove
+                </button>
+              </div>
+              <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-center">
+                <input
+                  className={inputClassName}
+                  placeholder="Name"
+                  value={entry.name}
+                  onChange={(event) =>
+                    setFormState((prev) => {
+                      const next = [...prev.testimonials];
+                      next[index] = { ...next[index], name: event.target.value };
+                      return { ...prev, testimonials: next };
+                    })
+                  }
+                />
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-semibold uppercase tracking-widest text-(--brand-ink)/70">
+                    Rating
+                  </span>
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => {
+                      const isActive = star <= entry.rating;
+                      return (
+                        <button
+                          key={`${index}-star-${star}`}
+                          type="button"
+                          className={`flex h-8 w-8 items-center justify-center rounded-full border text-sm transition ${
+                            isActive
+                              ? "border-(--brand-ember) bg-(--brand-ember) text-white"
+                              : "border-(--border-subtle) text-(--brand-ink)/50 hover:border-(--brand-ember)"
+                          }`}
+                          aria-label={`${star} star${star === 1 ? "" : "s"}`}
+                          aria-pressed={isActive}
+                          onClick={() =>
+                            setFormState((prev) => {
+                              const next = [...prev.testimonials];
+                              next[index] = { ...next[index], rating: star };
+                              return { ...prev, testimonials: next };
+                            })
+                          }
+                        >
+                          ★
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+              <textarea
+                className={`${inputClassName} min-h-22.5 resize-none`}
+                placeholder="Quote"
+                value={entry.quote}
+                onChange={(event) =>
+                  setFormState((prev) => {
+                    const next = [...prev.testimonials];
+                    next[index] = { ...next[index], quote: event.target.value };
+                    return { ...prev, testimonials: next };
+                  })
+                }
+              />
+            </div>
+          ))}
         </div>
         <div className="grid gap-6 md:grid-cols-2">
           <div className="grid gap-2">
@@ -184,12 +361,11 @@ export function NewServiceForm() {
                   durationMinutes: event.target.value,
                 }))
               }
-              required
             />
           </div>
           <div className="grid gap-2">
             <label className="text-xs font-semibold uppercase tracking-widest text-(--brand-ink)">
-              Price (ETB)
+              Price (USD)
             </label>
             <input
               type="number"
@@ -199,7 +375,6 @@ export function NewServiceForm() {
               onChange={(event) =>
                 setFormState((prev) => ({ ...prev, price: event.target.value }))
               }
-              required
             />
           </div>
         </div>
@@ -324,7 +499,7 @@ export function EditServiceForm({ initialService }: { initialService: Service })
   return (
     <>
       <ToastNotice toast={toast} />
-      <form className="mt-6 grid gap-6" onSubmit={handleSubmit}>
+      <form className="mt-6 grid gap-6" onSubmit={handleSubmit} noValidate>
         <div className="grid gap-2">
           <label className="text-xs font-semibold uppercase tracking-widest text-(--brand-ink)">
             Service name
@@ -335,7 +510,6 @@ export function EditServiceForm({ initialService }: { initialService: Service })
             onChange={(event) =>
               setFormState((prev) => ({ ...prev, name: event.target.value }))
             }
-            required
           />
         </div>
         <div className="grid gap-2">
@@ -343,10 +517,25 @@ export function EditServiceForm({ initialService }: { initialService: Service })
             Description
           </label>
           <textarea
-            className={`${inputClassName} min-h-[120px] resize-none`}
+            className={`${inputClassName} min-h-30 resize-none`}
             value={formState.description}
             onChange={(event) =>
               setFormState((prev) => ({ ...prev, description: event.target.value }))
+            }
+          />
+        </div>
+        <div className="grid gap-2">
+          <label className="text-xs font-semibold uppercase tracking-widest text-(--brand-ink)">
+            Workout includes (one per line)
+          </label>
+          <textarea
+            className={`${inputClassName} min-h-35 resize-none`}
+            value={formState.workoutIncludes}
+            onChange={(event) =>
+              setFormState((prev) => ({
+                ...prev,
+                workoutIncludes: event.target.value,
+              }))
             }
           />
         </div>
@@ -366,12 +555,11 @@ export function EditServiceForm({ initialService }: { initialService: Service })
                   durationMinutes: event.target.value,
                 }))
               }
-              required
             />
           </div>
           <div className="grid gap-2">
             <label className="text-xs font-semibold uppercase tracking-widest text-(--brand-ink)">
-              Price (ETB)
+              Price (USD)
             </label>
             <input
               type="number"
@@ -381,9 +569,116 @@ export function EditServiceForm({ initialService }: { initialService: Service })
               onChange={(event) =>
                 setFormState((prev) => ({ ...prev, price: event.target.value }))
               }
-              required
             />
           </div>
+        </div>
+        <div className="grid gap-4">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold uppercase tracking-widest text-(--brand-ink)">
+              Testimonials (up to 5)
+            </p>
+            {formState.testimonials.length < 5 ? (
+              <button
+                type="button"
+                className="rounded-full border border-(--brand-ink) px-4 py-1.5 text-[0.65rem] font-semibold uppercase tracking-widest text-(--brand-ink) transition hover:border-(--brand-ember) hover:text-(--brand-ember)"
+                onClick={() =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    testimonials: [
+                      ...prev.testimonials,
+                      { name: "", rating: 5, quote: "" },
+                    ],
+                  }))
+                }
+              >
+                Add
+              </button>
+            ) : null}
+          </div>
+          {formState.testimonials.map((entry, index) => (
+            <div
+              key={`testimonial-${index}`}
+              className="grid gap-3 rounded-2xl border border-(--border-subtle) bg-(--surface-solid) p-4"
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold uppercase tracking-widest text-(--brand-ink)/70">
+                  Testimonial {index + 1}
+                </p>
+                <button
+                  type="button"
+                  className="text-[0.65rem] font-semibold uppercase tracking-widest text-(--brand-ink)/70 transition hover:text-(--brand-ember)"
+                  onClick={() =>
+                    setFormState((prev) => {
+                      const next = prev.testimonials.filter(
+                        (_, entryIndex) => entryIndex !== index,
+                      );
+                      return { ...prev, testimonials: next };
+                    })
+                  }
+                >
+                  Remove
+                </button>
+              </div>
+              <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-center">
+                <input
+                  className={inputClassName}
+                  placeholder="Name"
+                  value={entry.name}
+                  onChange={(event) =>
+                    setFormState((prev) => {
+                      const next = [...prev.testimonials];
+                      next[index] = { ...next[index], name: event.target.value };
+                      return { ...prev, testimonials: next };
+                    })
+                  }
+                />
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-semibold uppercase tracking-widest text-(--brand-ink)/70">
+                    Rating
+                  </span>
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => {
+                      const isActive = star <= entry.rating;
+                      return (
+                        <button
+                          key={`${index}-star-${star}`}
+                          type="button"
+                          className={`flex h-8 w-8 items-center justify-center rounded-full border text-sm transition ${
+                            isActive
+                              ? "border-(--brand-ember) bg-(--brand-ember) text-white"
+                              : "border-(--border-subtle) text-(--brand-ink)/50 hover:border-(--brand-ember)"
+                          }`}
+                          aria-label={`${star} star${star === 1 ? "" : "s"}`}
+                          aria-pressed={isActive}
+                          onClick={() =>
+                            setFormState((prev) => {
+                              const next = [...prev.testimonials];
+                              next[index] = { ...next[index], rating: star };
+                              return { ...prev, testimonials: next };
+                            })
+                          }
+                        >
+                          ★
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+              <textarea
+                className={`${inputClassName} min-h-22.5 resize-none`}
+                placeholder="Quote"
+                value={entry.quote}
+                onChange={(event) =>
+                  setFormState((prev) => {
+                    const next = [...prev.testimonials];
+                    next[index] = { ...next[index], quote: event.target.value };
+                    return { ...prev, testimonials: next };
+                  })
+                }
+              />
+            </div>
+          ))}
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <button

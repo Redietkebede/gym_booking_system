@@ -64,7 +64,7 @@ export default async function AdminServicesPage() {
                     {service.durationMinutes} min
                   </td>
                   <td className="px-4 py-4 text-sm">
-                    ETB {service.price.toLocaleString("en-KE")}
+                    USD {service.price.toLocaleString("en-KE")}
                   </td>
                   <td className="px-4 py-4">
                     <span

@@ -23,8 +23,32 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const themeScript = `
+    (function() {
+      try {
+        var isAdmin = window.location && window.location.pathname.startsWith("/admin");
+        var storageKey = isAdmin ? "gbs-theme-admin" : "gbs-theme";
+        var stored = localStorage.getItem(storageKey);
+        var cookieMatch = document.cookie.match(new RegExp("(?:^|; )" + storageKey + "=([^;]+)"));
+        var cookieTheme = cookieMatch ? cookieMatch[1] : null;
+        var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme = stored || cookieTheme || (prefersDark ? "dark" : "light");
+        var root = document.documentElement;
+        if (theme === "dark") {
+          root.classList.add("dark");
+        } else {
+          root.classList.remove("dark");
+        }
+        root.style.colorScheme = theme;
+      } catch (e) {}
+    })();
+  `;
+
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className={`${spaceGrotesk.variable} ${fraunces.variable} antialiased`}>
         {children}
       </body>

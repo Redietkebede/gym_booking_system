@@ -31,6 +31,8 @@ export default async function EditServicePage({ params }: PageProps) {
       durationMinutes: true,
       price: true,
       isActive: true,
+      workoutIncludes: true,
+      testimonials: true,
     },
   });
 

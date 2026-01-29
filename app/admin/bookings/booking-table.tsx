@@ -22,6 +22,9 @@ type BookingTableProps = {
   initialBookings: Booking[];
 };
 
+const selectPillClass =
+  "w-full appearance-none rounded-full border border-(--border-subtle) bg-(--surface-solid) px-4 py-2 pr-9 text-xs font-semibold uppercase tracking-widest text-(--brand-ink) [background-image:linear-gradient(45deg,transparent_50%,currentColor_50%),linear-gradient(135deg,currentColor_50%,transparent_50%)] [background-position:calc(100%-1rem)_calc(50%-2px),calc(100%-0.7rem)_calc(50%-2px)] [background-size:5px_5px,5px_5px] [background-repeat:no-repeat]";
+
 const statusLabels: Record<Booking["status"], string> = {
   PENDING: "Pending",
   APPROVED: "Approved",
@@ -112,7 +115,7 @@ export default function BookingTable({ initialBookings }: BookingTableProps) {
     <div className="grid gap-4">
       <div className="flex flex-wrap items-center gap-3">
         <select
-          className="rounded-full border border-(--border-subtle) bg-(--surface-solid) px-4 py-2 text-xs font-semibold uppercase tracking-widest text-(--brand-ink)"
+          className={selectPillClass}
           value={statusFilter}
           onChange={(event) => {
             const nextValue = event.target.value;
@@ -180,7 +183,7 @@ export default function BookingTable({ initialBookings }: BookingTableProps) {
                   <td className="px-4 py-4">{booking.timeSlot}</td>
                   <td className="px-4 py-4">
                     <select
-                      className={`rounded-full border bg-(--surface-solid) px-3 py-2 text-xs font-semibold uppercase tracking-widest ${statusTone[booking.status]}`}
+                      className={`${selectPillClass} ${statusTone[booking.status]}`}
                       value={booking.status}
                       onChange={(event) =>
                         updateStatus(

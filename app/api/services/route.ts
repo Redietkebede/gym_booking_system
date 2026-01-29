@@ -11,6 +11,7 @@ export async function GET() {
       description: true,
       durationMinutes: true,
       price: true,
+      workoutIncludes: true,
     },
     orderBy: { createdAt: "asc" },
   });

@@ -14,6 +14,12 @@ export default function AdminLoginPage() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
+
+    if (!email.trim() || !password.trim()) {
+      setError("Email and password are required.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     const result = await signIn("credentials", {
@@ -40,7 +46,7 @@ export default function AdminLoginPage() {
       <p className="mt-2 text-sm text-(--brand-ink)/70">
         Use your admin credentials to manage bookings and services.
       </p>
-      <form className="mt-6 grid gap-5" onSubmit={handleSubmit}>
+      <form className="mt-6 grid gap-5" onSubmit={handleSubmit} noValidate>
         <label className="grid gap-2 text-sm font-semibold text-(--brand-ink)">
           Email
           <input
@@ -48,7 +54,6 @@ export default function AdminLoginPage() {
             className="rounded-2xl border border-(--border-subtle) bg-(--surface-solid) px-4 py-3 text-base text-(--brand-ink)"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            required
             autoComplete="email"
           />
         </label>
@@ -59,7 +64,6 @@ export default function AdminLoginPage() {
             className="rounded-2xl border border-(--border-subtle) bg-(--surface-solid) px-4 py-3 text-base text-(--brand-ink)"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            required
             autoComplete="current-password"
           />
         </label>
