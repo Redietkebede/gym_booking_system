@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin";
 
@@ -102,6 +103,13 @@ export async function PATCH(request: Request) {
     testimonials,
   } = payload;
 
+  const normalizedTestimonials =
+    testimonials === undefined
+      ? undefined
+      : testimonials === null
+        ? Prisma.DbNull
+        : (testimonials as Prisma.InputJsonValue);
+
   const service = await prisma.service.update({
     where: { id },
     data: {
@@ -111,7 +119,9 @@ export async function PATCH(request: Request) {
       ...(price ? { price } : {}),
       ...(isActive !== undefined ? { isActive } : {}),
       ...(workoutIncludes ? { workoutIncludes } : {}),
-      ...(testimonials !== undefined ? { testimonials } : {}),
+      ...(normalizedTestimonials !== undefined
+        ? { testimonials: normalizedTestimonials }
+        : {}),
     },
   });
 
