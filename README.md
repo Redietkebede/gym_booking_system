@@ -19,7 +19,7 @@ A Next.js App Router project for a boutique training studio. The public site is 
 - **Next.js 16 (App Router)**
 - **React 19**
 - **Tailwind CSS v4**
-- **Prisma + PostgreSQL**
+- **Prisma + PostgreSQL** (supabase recommend)
 - **NextAuth** (Credentials provider)
 
 ## Pages & Routes
