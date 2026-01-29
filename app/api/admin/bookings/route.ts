@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
+import type { BookingStatus } from "@prisma/client";
 import { requireAdmin } from "@/lib/admin";
 
 export async function GET(request: Request) {
@@ -10,8 +11,12 @@ export async function GET(request: Request) {
   }
 
   const url = new URL(request.url);
-  const status = url.searchParams.get("status") ?? undefined;
+  const statusParam = url.searchParams.get("status") ?? undefined;
   const date = url.searchParams.get("date") ?? undefined;
+  const statusValues = ["PENDING", "APPROVED", "REJECTED", "COMPLETED"] as const;
+  const status = statusValues.includes(statusParam as BookingStatus)
+    ? (statusParam as BookingStatus)
+    : undefined;
 
   const dateFilter =
     date && !Number.isNaN(new Date(date).getTime())
