@@ -69,10 +69,19 @@ Open http://localhost:3000.
 
 ## Environment Variables
 
-Create `.env` with:
+Copy `.env.example` to `.env`:
 
 ```bash
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DB"
+cp .env.example .env
+```
+
+Then fill in your real DB credentials and auth secret.
+
+Required variables:
+
+```bash
+DATABASE_URL="postgresql://postgres.<project-ref>:<password>@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true&sslmode=require"
+DIRECT_URL="postgresql://postgres.<project-ref>:<password>@aws-0-eu-west-1.pooler.supabase.com:5432/postgres?sslmode=require"
 SEED_ADMIN_EMAIL="admin@example.com"
 SEED_ADMIN_PASSWORD="admin123"
 SEED_ADMIN_NAME="Admin"
@@ -82,11 +91,27 @@ NEXTAUTH_URL="http://localhost:3000"
 
 ## Database Setup
 
-Run migrations and seed:
+### Fresh database (recommended for new environments)
 
 ```bash
-npx prisma migrate dev
+npx prisma migrate deploy
 npx prisma db seed
+```
+
+### Existing Supabase database with `*_rows` tables/data
+
+If your DB already contains `User_rows`, `Service_rows`, `Booking_rows`, run:
+
+```bash
+npx prisma db execute --schema prisma/schema.prisma --file prisma/sql/sync_existing_rows.sql
+```
+
+This creates the app tables (`User`, `Service`, `Booking`) and copies data without dropping the existing `*_rows` tables.
+
+After either path:
+
+```bash
+npx prisma generate
 ```
 
 ## Notes / Next Steps
