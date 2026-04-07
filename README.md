@@ -2,6 +2,10 @@
 
 A Next.js App Router project for a premium training studio. The site is fully wired to Prisma data, and the admin area supports authentication plus booking/service management.
 
+## Live Demo
+
+- https://gym-booking-system-one.vercel.app
+
 ## Current Features
 
 - **Marketing home page** with CTA links, dynamic services, and testimonials pulled from the database.
