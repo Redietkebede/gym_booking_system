@@ -5,6 +5,15 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 
+type ServiceTableRow = {
+  id: string;
+  name: string;
+  description: string | null;
+  durationMinutes: number;
+  price: number;
+  isActive: boolean;
+};
+
 export default async function AdminServicesPage() {
   const session = await requireAdmin();
 
@@ -47,7 +56,7 @@ export default async function AdminServicesPage() {
           </thead>
           <tbody>
             {services.length ? (
-              services.map((service) => (
+              services.map((service: ServiceTableRow) => (
                 <tr
                   key={service.id}
                   className="border-t border-(--border-subtle) text-(--brand-ink)"
