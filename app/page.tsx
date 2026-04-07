@@ -1,6 +1,8 @@
 import PublicHeader from "./components/public-header";
 import SiteFooter from "./components/site-footer";
+import { shuffleFisherYates } from "@/lib/array-utils";
 import { prisma } from "@/lib/prisma";
+import { testimonialsJsonSchema } from "@/lib/schemas";
 import ChooseSessionScrollSection from "@/components/ui/choose-session-scroll-section";
 import PromiseCtaRow from "@/components/ui/promise-cta-row";
 
@@ -28,46 +30,32 @@ export default async function Home() {
   });
 
   const testimonials = services.flatMap((service) => {
-    if (!Array.isArray(service.testimonials)) {
+    const parsedTestimonials = testimonialsJsonSchema.safeParse(service.testimonials);
+    if (!parsedTestimonials.success) {
       return [];
     }
-    return service.testimonials
-      .map((entry: unknown) => {
-        if (!entry || typeof entry !== "object") {
-          return null;
-        }
-        const entryRecord = entry as Record<string, unknown>;
-        const name =
-          typeof entryRecord.name === "string" ? entryRecord.name : "";
-        const rating =
-          typeof entryRecord.rating === "number" &&
-          Number.isFinite(entryRecord.rating)
-            ? Math.min(Math.max(Math.round(entryRecord.rating), 1), 5)
-            : 5;
-        const quote =
-          typeof entryRecord.quote === "string" ? entryRecord.quote : "";
-        if (!name || !quote) {
-          return null;
-        }
-        return {
-          name,
-          rating,
-          quote,
+
+    return parsedTestimonials.data
+      .filter((entry) => entry.name.length > 0 && entry.quote.length > 0)
+      .map(
+        (entry): Testimonial => ({
+          name: entry.name,
+          rating: entry.rating,
+          quote: entry.quote,
           serviceId: service.id,
           serviceName: service.name,
-        } as Testimonial;
-      })
-      .filter((entry: any): entry is Testimonial => Boolean(entry));
+        }),
+      );
   });
 
   const featuredTestimonials = testimonials.length
-    ? [...testimonials].sort(() => 0.5 - Math.random()).slice(0, 5)
+    ? shuffleFisherYates(testimonials).slice(0, 5)
     : [];
   const marqueeItems = featuredTestimonials.length
     ? [...featuredTestimonials, ...featuredTestimonials]
     : [];
   const rhythmSessions = services.length
-    ? [...services].sort(() => 0.5 - Math.random()).slice(0, 4)
+    ? shuffleFisherYates(services).slice(0, 4)
     : [];
 
   return (

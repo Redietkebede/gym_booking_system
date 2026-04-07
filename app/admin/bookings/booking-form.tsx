@@ -1,7 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import {
+  formInputClassName,
+  formSelectClassName,
+} from "@/components/ui/form-classnames";
+import ToastNotice from "@/components/ui/toast-notice";
+import { useToast } from "@/hooks/use-toast";
+import { assertResponseOk, reportClientError } from "@/lib/http-client";
 
 type ServiceOption = {
   id: string;
@@ -18,11 +25,6 @@ type Booking = {
   date: string;
   timeSlot: string;
   status: "PENDING" | "APPROVED" | "REJECTED" | "COMPLETED";
-};
-
-type Toast = {
-  message: string;
-  tone: "success" | "error";
 };
 
 type BookingFormState = {
@@ -51,45 +53,6 @@ const emptyState: BookingFormState = {
   timeSlot: "",
   status: "PENDING",
 };
-
-const inputClassName =
-  "rounded-2xl border border-(--border-subtle) bg-(--surface-solid) px-4 py-3 text-sm text-(--brand-ink) placeholder:text-(--brand-ink)/40";
-
-const selectClassName =
-  "w-full appearance-none rounded-2xl border border-(--border-subtle) bg-(--surface-solid) px-4 py-3 pr-10 text-sm text-(--brand-ink) placeholder:text-(--brand-ink)/40 [background-image:linear-gradient(45deg,transparent_50%,currentColor_50%),linear-gradient(135deg,currentColor_50%,transparent_50%)] [background-position:calc(100%-1.1rem)_calc(50%-2px),calc(100%-0.8rem)_calc(50%-2px)] [background-size:5px_5px,5px_5px] [background-repeat:no-repeat]";
-
-function ToastNotice({ toast }: { toast: Toast | null }) {
-  if (!toast) {
-    return null;
-  }
-
-  return (
-    <div
-      className={`fixed bottom-6 right-6 z-50 rounded-2xl border px-4 py-3 text-sm shadow-[0_16px_40px_var(--shadow-color)] ${
-        toast.tone === "success"
-          ? "border-(--border-subtle) bg-(--surface-solid) text-(--brand-ink)"
-          : "border-(--brand-ember) bg-(--surface-solid) text-(--brand-ink)"
-      }`}
-      role="status"
-    >
-      {toast.message}
-    </div>
-  );
-}
-
-function useToast() {
-  const [toast, setToast] = useState<Toast | null>(null);
-
-  useEffect(() => {
-    if (!toast) {
-      return;
-    }
-    const timeout = window.setTimeout(() => setToast(null), 2800);
-    return () => window.clearTimeout(timeout);
-  }, [toast]);
-
-  return { toast, setToast };
-}
 
 function toDateInputValue(dateString: string) {
   const date = new Date(dateString);
@@ -173,9 +136,7 @@ export function BookingForm({ services, initialBooking }: BookingFormProps) {
         ),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to save booking.");
-      }
+      assertResponseOk(response, "Failed to save booking.");
 
       setToast({
         message: initialBooking ? "Booking updated." : "Booking created.",
@@ -185,7 +146,7 @@ export function BookingForm({ services, initialBooking }: BookingFormProps) {
       router.push("/admin/bookings");
       router.refresh();
     } catch (error) {
-      console.error(error);
+      reportClientError(error);
       setToast({ message: "Unable to save booking.", tone: "error" });
     } finally {
       setIsSaving(false);
@@ -201,7 +162,7 @@ export function BookingForm({ services, initialBooking }: BookingFormProps) {
             Service
           </label>
           <select
-            className={selectClassName}
+            className={formSelectClassName}
             value={formState.serviceId}
             onChange={(event) =>
               setFormState((prev) => ({ ...prev, serviceId: event.target.value }))
@@ -223,7 +184,7 @@ export function BookingForm({ services, initialBooking }: BookingFormProps) {
             </label>
             <input
               type="date"
-              className={inputClassName}
+              className={formInputClassName}
               value={formState.date}
               onChange={(event) =>
                 setFormState((prev) => ({ ...prev, date: event.target.value }))
@@ -236,7 +197,7 @@ export function BookingForm({ services, initialBooking }: BookingFormProps) {
             </label>
             <input
               type="time"
-              className={inputClassName}
+              className={formInputClassName}
               value={formState.timeSlot}
               onChange={(event) =>
                 setFormState((prev) => ({ ...prev, timeSlot: event.target.value }))
@@ -250,7 +211,7 @@ export function BookingForm({ services, initialBooking }: BookingFormProps) {
               Customer name
             </label>
             <input
-              className={inputClassName}
+              className={formInputClassName}
               value={formState.customerName}
               onChange={(event) =>
                 setFormState((prev) => ({
@@ -266,7 +227,7 @@ export function BookingForm({ services, initialBooking }: BookingFormProps) {
             </label>
             <input
               type="email"
-              className={inputClassName}
+              className={formInputClassName}
               value={formState.customerEmail}
               onChange={(event) =>
                 setFormState((prev) => ({
@@ -283,7 +244,7 @@ export function BookingForm({ services, initialBooking }: BookingFormProps) {
               Customer phone
             </label>
             <input
-              className={inputClassName}
+              className={formInputClassName}
               value={formState.customerPhone}
               onChange={(event) =>
                 setFormState((prev) => ({
@@ -299,7 +260,7 @@ export function BookingForm({ services, initialBooking }: BookingFormProps) {
                 Status
               </label>
               <select
-                className={selectClassName}
+                className={formSelectClassName}
                 value={formState.status}
                 onChange={(event) =>
                   setFormState((prev) => ({
@@ -343,14 +304,12 @@ export function BookingForm({ services, initialBooking }: BookingFormProps) {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ bookingId: initialBooking.id }),
                   });
-                  if (!response.ok) {
-                    throw new Error("Failed to delete booking.");
-                  }
+                  assertResponseOk(response, "Failed to delete booking.");
                   setToast({ message: "Booking deleted.", tone: "success" });
                   router.push("/admin/bookings");
                   router.refresh();
                 } catch (error) {
-                  console.error(error);
+                  reportClientError(error);
                   setToast({ message: "Unable to delete booking.", tone: "error" });
                 } finally {
                   setIsDeleting(false);

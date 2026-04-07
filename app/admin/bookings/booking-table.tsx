@@ -2,6 +2,11 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import {
+  formDatePillClassName,
+  formSelectPillClassName,
+} from "@/components/ui/form-classnames";
+import { assertResponseOk, reportClientError } from "@/lib/http-client";
 
 type Booking = {
   id: string;
@@ -21,9 +26,6 @@ type Booking = {
 type BookingTableProps = {
   initialBookings: Booking[];
 };
-
-const selectPillClass =
-  "w-full appearance-none rounded-full border border-(--border-subtle) bg-(--surface-solid) px-4 py-2 pr-9 text-xs font-semibold uppercase tracking-widest text-(--brand-ink) [background-image:linear-gradient(45deg,transparent_50%,currentColor_50%),linear-gradient(135deg,currentColor_50%,transparent_50%)] [background-position:calc(100%-1rem)_calc(50%-2px),calc(100%-0.7rem)_calc(50%-2px)] [background-size:5px_5px,5px_5px] [background-repeat:no-repeat]";
 
 const statusLabels: Record<Booking["status"], string> = {
   PENDING: "Pending",
@@ -73,13 +75,11 @@ export default function BookingTable({ initialBookings }: BookingTableProps) {
         params.set("date", nextDate);
       }
       const response = await fetch(`/api/admin/bookings?${params.toString()}`);
-      if (!response.ok) {
-        throw new Error("Failed to load bookings.");
-      }
+      assertResponseOk(response, "Failed to load bookings.");
       const data = (await response.json()) as Booking[];
       setBookings(data);
     } catch (fetchError) {
-      console.error(fetchError);
+      reportClientError(fetchError);
       setError("Unable to load bookings.");
     } finally {
       setIsLoading(false);
@@ -95,16 +95,14 @@ export default function BookingTable({ initialBookings }: BookingTableProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ bookingId, newStatus }),
       });
-      if (!response.ok) {
-        throw new Error("Failed to update booking.");
-      }
+      assertResponseOk(response, "Failed to update booking.");
       setBookings((prev) =>
         prev.map((booking) =>
           booking.id === bookingId ? { ...booking, status: newStatus } : booking,
         ),
       );
     } catch (updateError) {
-      console.error(updateError);
+      reportClientError(updateError);
       setError("Unable to update booking.");
     } finally {
       setIsLoading(false);
@@ -115,7 +113,7 @@ export default function BookingTable({ initialBookings }: BookingTableProps) {
     <div className="grid gap-4">
       <div className="flex flex-wrap items-center gap-3">
         <select
-          className={selectPillClass}
+          className={formSelectPillClassName}
           value={statusFilter}
           onChange={(event) => {
             const nextValue = event.target.value;
@@ -131,7 +129,7 @@ export default function BookingTable({ initialBookings }: BookingTableProps) {
         </select>
         <input
           type="date"
-          className="rounded-full border border-(--border-subtle) bg-(--surface-solid) px-4 py-2 text-xs font-semibold uppercase tracking-widest text-(--brand-ink)"
+          className={formDatePillClassName}
           value={dateFilter}
           onChange={(event) => {
             const nextValue = event.target.value;
@@ -183,7 +181,7 @@ export default function BookingTable({ initialBookings }: BookingTableProps) {
                   <td className="px-4 py-4">{booking.timeSlot}</td>
                   <td className="px-4 py-4">
                     <select
-                      className={`${selectPillClass} ${statusTone[booking.status]}`}
+                      className={`${formSelectPillClassName} ${statusTone[booking.status]}`}
                       value={booking.status}
                       onChange={(event) =>
                         updateStatus(
