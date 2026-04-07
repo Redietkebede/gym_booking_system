@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 import ThemeToggle from "./theme-toggle";
@@ -34,9 +35,23 @@ export default function AdminHeader() {
   return (
     <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6 md:px-10">
       <Link
-        className="text-lg font-semibold uppercase tracking-[0.2em] text-(--brand-ink)"
+        className="flex items-center gap-3 text-lg font-semibold uppercase tracking-[0.2em] text-(--brand-ink)"
         href="/"
       >
+        <Image
+          src="/assets/brand/logo-mark-light.svg"
+          alt="Gym Booking System logo light"
+          width={32}
+          height={32}
+          className="brand-logo-light h-8 w-8 rounded-full border border-(--border-subtle) bg-(--surface-solid) p-1"
+        />
+        <Image
+          src="/assets/brand/logo-mark-dark.svg"
+          alt="Gym Booking System logo dark"
+          width={32}
+          height={32}
+          className="brand-logo-dark h-8 w-8 rounded-full border border-(--border-subtle) bg-(--surface-solid) p-1"
+        />
         Gym Booking System
       </Link>
       <div className="relative" ref={menuRef}>

@@ -10,6 +10,9 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const seedEmail = process.env.NEXT_PUBLIC_SEED_ADMIN_EMAIL ?? "admin@example.com";
+  const seedPassword =
+    process.env.NEXT_PUBLIC_SEED_ADMIN_PASSWORD ?? "admin123";
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -47,6 +50,17 @@ export default function AdminLoginPage() {
         Use your admin credentials to manage bookings and services.
       </p>
       <form className="mt-6 grid gap-5" onSubmit={handleSubmit} noValidate>
+        <button
+          type="button"
+          onClick={() => {
+            setEmail(seedEmail);
+            setPassword(seedPassword);
+            setError(null);
+          }}
+          className="w-fit rounded-full border border-(--border-subtle) px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-(--brand-ink)/80 transition hover:border-(--brand-ember) hover:text-(--brand-ember)"
+        >
+          Use Seed Credentials
+        </button>
         <label className="grid gap-2 text-sm font-semibold text-(--brand-ink)">
           Email
           <input

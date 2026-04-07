@@ -89,6 +89,13 @@ NEXTAUTH_SECRET="your-secret"
 NEXTAUTH_URL="http://localhost:3000"
 ```
 
+Optional (login hint button, recommended for local/dev only):
+
+```bash
+NEXT_PUBLIC_SEED_ADMIN_EMAIL="admin@example.com"
+NEXT_PUBLIC_SEED_ADMIN_PASSWORD="admin123"
+```
+
 ## Database Setup
 
 ### Fresh database (recommended for new environments)
