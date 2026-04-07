@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 
-import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin";
 
@@ -14,6 +13,11 @@ type ServicePayload = {
   workoutIncludes?: string[];
   testimonials?: unknown;
 };
+
+type ServiceUpdateData = NonNullable<
+  Parameters<typeof prisma.service.update>[0]["data"]
+>;
+type TestimonialsUpdateValue = ServiceUpdateData["testimonials"];
 
 export async function GET() {
   const session = await requireAdmin();
@@ -103,12 +107,12 @@ export async function PATCH(request: Request) {
     testimonials,
   } = payload;
 
-  const normalizedTestimonials =
+  const normalizedTestimonials: TestimonialsUpdateValue | undefined =
     testimonials === undefined
       ? undefined
       : testimonials === null
-        ? Prisma.DbNull
-        : (testimonials as Prisma.InputJsonValue);
+        ? (null as unknown as TestimonialsUpdateValue)
+        : (testimonials as TestimonialsUpdateValue);
 
   const service = await prisma.service.update({
     where: { id },
