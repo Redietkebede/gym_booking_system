@@ -14,8 +14,18 @@ type Testimonial = {
   serviceName: string;
 };
 
+type HomeService = {
+  id: string;
+  name: string;
+  description: string | null;
+  durationMinutes: number;
+  price: number;
+  workoutIncludes: string[];
+  testimonials: unknown;
+};
+
 export default async function Home() {
-  const services = await prisma.service.findMany({
+  const services = (await prisma.service.findMany({
     where: { isActive: true },
     select: {
       id: true,
@@ -27,7 +37,7 @@ export default async function Home() {
       testimonials: true,
     },
     orderBy: { createdAt: "asc" },
-  });
+  })) as HomeService[];
 
   const testimonials = services.flatMap((service) => {
     const parsedTestimonials = testimonialsJsonSchema.safeParse(service.testimonials);
