@@ -1,8 +1,25 @@
 import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
-import type { BookingStatus } from "@prisma/client";
 import { requireAdmin } from "@/lib/admin";
+
+const BOOKING_STATUS_VALUES = [
+  "PENDING",
+  "APPROVED",
+  "REJECTED",
+  "COMPLETED",
+] as const;
+
+type BookingStatus = (typeof BOOKING_STATUS_VALUES)[number];
+
+function toBookingStatus(value?: string | null): BookingStatus | undefined {
+  if (!value) {
+    return undefined;
+  }
+  return BOOKING_STATUS_VALUES.includes(value as BookingStatus)
+    ? (value as BookingStatus)
+    : undefined;
+}
 
 export async function GET(request: Request) {
   const session = await requireAdmin();
@@ -13,10 +30,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const statusParam = url.searchParams.get("status") ?? undefined;
   const date = url.searchParams.get("date") ?? undefined;
-  const statusValues = ["PENDING", "APPROVED", "REJECTED", "COMPLETED"] as const;
-  const status = statusValues.includes(statusParam as BookingStatus)
-    ? (statusParam as BookingStatus)
-    : undefined;
+  const status = toBookingStatus(statusParam);
 
   const dateFilter =
     date && !Number.isNaN(new Date(date).getTime())
@@ -160,8 +174,8 @@ export async function PATCH(request: Request) {
   }
 
   const statusValue = payload.newStatus ?? payload.status;
-  const statusValues = ["PENDING", "APPROVED", "REJECTED", "COMPLETED"] as const;
-  if (statusValue && !statusValues.includes(statusValue as (typeof statusValues)[number])) {
+  const bookingStatus = toBookingStatus(statusValue);
+  if (statusValue && !bookingStatus) {
     return NextResponse.json({ error: "Invalid status." }, { status: 400 });
   }
 
@@ -185,8 +199,8 @@ export async function PATCH(request: Request) {
   const updated = await prisma.booking.update({
     where: { id: payload.bookingId },
     data: {
-      ...(statusValue
-        ? { status: statusValue as (typeof statusValues)[number] }
+      ...(bookingStatus
+        ? { status: bookingStatus }
         : {}),
       ...(payload.serviceId ? { serviceId: payload.serviceId } : {}),
       ...(parsedDate ? { date: parsedDate } : {}),
