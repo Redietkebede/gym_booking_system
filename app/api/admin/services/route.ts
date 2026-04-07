@@ -14,10 +14,10 @@ type ServicePayload = {
   testimonials?: unknown;
 };
 
-type ServiceUpdateData = NonNullable<
-  Parameters<typeof prisma.service.update>[0]["data"]
->;
-type TestimonialsUpdateValue = ServiceUpdateData["testimonials"];
+type ServiceUpdateArg = Parameters<typeof prisma.service.update>[0];
+type SafeServiceUpdateData = ServiceUpdateArg extends { data: infer TData }
+  ? TData
+  : Record<string, unknown>;
 
 export async function GET() {
   const session = await requireAdmin();
@@ -107,12 +107,12 @@ export async function PATCH(request: Request) {
     testimonials,
   } = payload;
 
-  const normalizedTestimonials: TestimonialsUpdateValue | undefined =
+  const normalizedTestimonials =
     testimonials === undefined
       ? undefined
       : testimonials === null
-        ? (null as unknown as TestimonialsUpdateValue)
-        : (testimonials as TestimonialsUpdateValue);
+        ? null
+        : testimonials;
 
   const service = await prisma.service.update({
     where: { id },
@@ -126,7 +126,7 @@ export async function PATCH(request: Request) {
       ...(normalizedTestimonials !== undefined
         ? { testimonials: normalizedTestimonials }
         : {}),
-    },
+    } as SafeServiceUpdateData,
   });
 
   return NextResponse.json(service);
