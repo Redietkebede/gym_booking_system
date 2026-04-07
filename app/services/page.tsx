@@ -4,8 +4,17 @@ import { prisma } from "@/lib/prisma";
 
 const priceFormatter = new Intl.NumberFormat("en-KE");
 
+type ServiceListItem = {
+  id: string;
+  name: string;
+  description: string | null;
+  durationMinutes: number;
+  price: number;
+  workoutIncludes: string[];
+};
+
 export default async function ServicesPage() {
-  const services = await prisma.service.findMany({
+  const services = (await prisma.service.findMany({
     where: { isActive: true },
     select: {
       id: true,
@@ -16,7 +25,7 @@ export default async function ServicesPage() {
       workoutIncludes: true,
     },
     orderBy: { createdAt: "asc" },
-  });
+  })) as ServiceListItem[];
 
   return (
     <div className="min-h-screen text-foreground">
@@ -46,7 +55,7 @@ export default async function ServicesPage() {
 
         {services.length ? (
           <div className="mt-10 grid gap-6 md:grid-cols-2">
-            {services.map((service) => (
+            {services.map((service: ServiceListItem) => (
               <div
                 key={service.id}
                 className="rounded-3xl border border-(--border-subtle) bg-(--surface) p-6 shadow-[0_24px_60px_var(--shadow-color)]"
@@ -66,7 +75,7 @@ export default async function ServicesPage() {
                 ) : null}
                 {service.workoutIncludes.length ? (
                   <ul className="mt-4 grid gap-2 text-xs text-(--brand-ink)/70">
-                    {service.workoutIncludes.map((item) => (
+                    {service.workoutIncludes.map((item: string) => (
                       <li key={item} className="flex items-center gap-2">
                         <span className="h-1.5 w-1.5 rounded-full bg-(--brand-ember)" />
                         {item}
