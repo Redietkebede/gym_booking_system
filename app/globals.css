@@ -56,6 +56,7 @@ html.dark {
 }
 
 html {
+  position: relative;
   background-color: var(--background);
   background-image: var(--page-gradient);
   background-attachment: fixed;
@@ -70,6 +71,7 @@ html.dark {
 }
 
 body {
+  position: relative;
   background: transparent;
   color: inherit;
   font-family: var(--font-sans), "Segoe UI", sans-serif;

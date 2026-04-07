@@ -70,18 +70,31 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
   const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
-    const stored = (localStorage.getItem(THEME_KEY) ??
-      localStorage.getItem(LEGACY_ADMIN_KEY)) as Theme | null;
-    const cookieTheme =
-      readCookieTheme(THEME_KEY) ?? readCookieTheme(LEGACY_ADMIN_KEY);
-    const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
-    const initial =
-      stored ?? cookieTheme ?? (prefersDark ? "dark" : "light");
-    setTheme(initial);
-    applyTheme(initial, false);
+    const rootTheme: Theme = document.documentElement.classList.contains("dark")
+      ? "dark"
+      : "light";
+
+    // Keep control state and favicon in sync with the already-applied root theme.
+    setTheme(rootTheme);
+    applyFavicon(rootTheme);
+
+    // Backfill persisted theme if older sessions are missing it.
+    const stored = localStorage.getItem(THEME_KEY) ?? localStorage.getItem(LEGACY_ADMIN_KEY);
+    if (stored !== "dark" && stored !== "light") {
+      localStorage.setItem(THEME_KEY, rootTheme);
+      localStorage.setItem(LEGACY_ADMIN_KEY, rootTheme);
+    }
+    const cookieTheme = readCookieTheme(THEME_KEY) ?? readCookieTheme(LEGACY_ADMIN_KEY);
+    if (!cookieTheme) {
+      document.cookie = `${THEME_KEY}=${rootTheme}; Path=/; Max-Age=31536000; SameSite=Lax`;
+      document.cookie = `${LEGACY_ADMIN_KEY}=${rootTheme}; Path=/admin; Max-Age=31536000; SameSite=Lax`;
+    }
 
     const handleStorage = (event: StorageEvent) => {
-      if (event.key !== THEME_KEY || !event.newValue) {
+      if (
+        (event.key !== THEME_KEY && event.key !== LEGACY_ADMIN_KEY) ||
+        !event.newValue
+      ) {
         return;
       }
       const next = event.newValue === "dark" ? "dark" : "light";

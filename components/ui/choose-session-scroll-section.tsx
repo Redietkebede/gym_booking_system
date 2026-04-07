@@ -53,7 +53,7 @@ function AnimatedServiceRow({
   return (
     <div
       ref={rowRef}
-      className={`flex min-h-[70vh] items-center gap-10 py-8 md:gap-24 md:py-12 ${
+      className={`relative flex min-h-[70vh] items-center gap-10 py-8 md:gap-24 md:py-12 ${
         reverse ? "md:flex-row-reverse" : ""
       }`}
     >
@@ -115,7 +115,10 @@ export default function ChooseSessionScrollSection({
   const gridOpacity = useTransform(scrollYProgress, [0.1, 0.45], [0, 1]);
 
   return (
-    <section ref={sectionRef} className="w-full bg-[#06070a] py-14 md:py-20">
+    <section
+      ref={sectionRef}
+      className="relative w-full bg-[#06070a] py-14 md:py-20"
+    >
       <motion.div
         className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-6 md:flex-row md:items-end md:justify-between md:px-10"
         style={{ y: headingY, opacity: headingOpacity }}
