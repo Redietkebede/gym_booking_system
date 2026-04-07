@@ -7,7 +7,7 @@ export default function SiteFooter() {
         <div className="grid gap-8 md:grid-cols-3">
           <div className="space-y-3">
             <div className="text-lg font-semibold uppercase tracking-[0.2em]">
-              Atlas Forge
+              Gym Booking System
             </div>
             <p className="text-sm leading-6 text-(--brand-ink)/70">
               A focused training studio built for measurable progress and
@@ -18,7 +18,7 @@ export default function SiteFooter() {
             <div className="text-xs font-semibold uppercase tracking-[0.3em] text-(--brand-ember)">
               Contact
             </div>
-            <div>hello@atlasforge.co</div>
+            <div>hello@gymbookingsystem.com</div>
             <div>+1 234 567 8900</div>
             <div>New York, USA</div>
           </div>
@@ -32,7 +32,7 @@ export default function SiteFooter() {
           </div>
         </div>
         <div className="mt-10 flex flex-col gap-2 text-xs text-(--brand-ink)/60 md:flex-row md:items-center md:justify-between">
-          <span>© {year} Atlas Forge. All rights reserved.</span>
+          <span>© {year} Gym Booking System. All rights reserved.</span>
           <span>Built for focused training and clear results.</span>
         </div>
       </div>

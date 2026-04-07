@@ -14,7 +14,7 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "Atlas Forge Training",
+  title: "Gym Booking System",
   description: "Book strength, conditioning, and mobility sessions with ease.",
 };
 

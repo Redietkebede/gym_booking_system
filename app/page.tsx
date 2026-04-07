@@ -81,7 +81,7 @@ export default async function Home() {
             Build strength that looks inevitable, not accidental.
           </h1>
           <p className="max-w-xl text-lg leading-8 text-(--brand-ink)/80">
-            Atlas Forge is a focused training studio for people who want sessions
+            Gym Booking System is a focused training studio for people who want sessions
             with structure, coaching, and measurable progress. Pick a service,
             choose a slot, and we will handle the rest.
           </p>

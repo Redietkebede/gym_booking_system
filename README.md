@@ -1,4 +1,4 @@
-# Atlas Forge — Gym Booking System
+# Gym Booking System
 
 A Next.js App Router project for a premium training studio. The site is fully wired to Prisma data, and the admin area supports authentication plus booking/service management.
 

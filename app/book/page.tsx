@@ -37,7 +37,7 @@ export default async function BookPage({ searchParams }: BookPageProps) {
               Need help?
             </h2>
             <p className="mt-3 text-base leading-7">
-              Call +254 712 345 678 or email hello@atlasforge.co. We can tailor a
+              Call +254 712 345 678 or email hello@gymbookingsystem.com. We can tailor a
               plan before your first visit.
             </p>
           </div>

@@ -37,7 +37,7 @@ export default function AdminHeader() {
         className="text-lg font-semibold uppercase tracking-[0.2em] text-(--brand-ink)"
         href="/"
       >
-        Atlas Forge
+        Gym Booking System
       </Link>
       <div className="relative" ref={menuRef}>
         <button
